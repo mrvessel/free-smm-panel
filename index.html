@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Free SMM Panel</title>
+    <!-- Include Supabase client library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; }
+        .container { max-width: 500px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: auto; }
+        h2 { color: #333; text-align: center; }
+        label { display: block; margin-top: 15px; font-weight: bold; color: #555; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { width: 100%; background: #007bff; color: white; border: none; padding: 12px; margin-top: 20px; border-radius: 4px; font-size: 16px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        #response-msg { margin-top: 15px; text-align: center; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>SMM Panel - New Order</h2>
+    <form id="order-form">
+        <label for="email">Your Email</label>
+        <input type="email" id="email" required placeholder="user@example.com">
+
+        <label for="service">Select Service</label>
+        <select id="service">
+            <option value="Instagram Followers">Instagram Followers (High Quality)</option>
+            <option value="TikTok Views">TikTok Views</option>
+            <option value="YouTube Likes">YouTube Likes</option>
+        </select>
+
+        <label for="link">Target Link / URL</label>
+        <input type="url" id="link" required placeholder="https://instagram.com/yourprofile">
+
+        <label for="quantity">Quantity</label>
+        <input type="number" id="quantity" min="100" max="10000" value="100" required>
+
+        <button type="submit">Place Order</button>
+    </form>
+    <div id="response-msg"></div>
+</div>
+
+<script>
+    // PARE YOUR SUPABASE DETAILS HERE (Found in Supabase Project Settings > API)
+    const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById('order-form');
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const msg = document.getElementById('response-msg');
+
+        const email = document.getElementById('email').value;
+        const service = document.getElementById('service').value;
+        const link = document.getElementById('link').value;
+        const quantity = parseInt(document.getElementById('quantity').value);
+
+        msg.style.color = '#007bff';
+        msg.innerText = 'Submitting order...';
+
+        // Insert data into Supabase 'orders' table
+        const { data, error } = await _supabase
+            .from('orders')
+            .insert([{ user_email: email, service: service, link: link, quantity: quantity }]);
+
+        if (error) {
+            msg.style.color = 'red';
+            msg.innerText = 'Error: ' + error.message;
+        } else {
+            msg.style.color = 'green';
+            msg.innerText = 'Order placed successfully!';
+            form.reset();
+        }
+    });
+</script>
+
+</body>
+          </html>
+          
